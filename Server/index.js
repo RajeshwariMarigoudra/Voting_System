@@ -17,9 +17,10 @@ app.use(express.json());
 
 // Configure CORS to allow requests from any origin
 app.use(cors({
-  origin: '*', // Allow requests from any origin
-  credentials: true,
+  origin: 'http://localhost:5173',
+  credentials: true // This allows cookies to be sent
 }));
+
 
 app.use(cookieParser());
 dotenv.config();
