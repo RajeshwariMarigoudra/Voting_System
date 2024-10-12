@@ -11,7 +11,7 @@ function DeleteElection() {
   const handleDelete = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.delete(`http://localhost:3000/ElectionRoutes/deleteElection/${electionId}`
+      const response = await axios.delete(`http://localhost:5000/ElectionRoutes/deleteElection/${electionId}`
       );
 
       if (response.data.message === "Election deleted successfully") {
@@ -34,7 +34,7 @@ function DeleteElection() {
         if (!token) {
           window.location.href = '/signin';
         } else {
-          const response = await axios.get('http://localhost:3000/auth/middleware', {}, {
+          const response = await axios.get('http://localhost:5000/auth/middleware', {}, {
             headers: {
               cookie: token,
               withCredentials: true

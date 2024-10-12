@@ -41,7 +41,7 @@ const UpdateElection = () => {
         return;
       }
 
-      const result = await axios.put("http://localhost:3000/ElectionRoutes/updateElection", {
+      const result = await axios.put("http://localhost:5000/ElectionRoutes/updateElection", {
         electionId,
         electionName,
         startDate: selectedStartDate.toISOString().split('T')[0], // Format as YYYY-MM-DD
@@ -69,7 +69,7 @@ const UpdateElection = () => {
         if (!token) {
           window.location.href = '/signin';
         } else {
-          const response = await axios.get('http://localhost:3000/auth/middleware', {}, {
+          const response = await axios.get('http://localhost:5000/auth/middleware', {}, {
             headers: {
               cookie: token,
               withCredentials: true

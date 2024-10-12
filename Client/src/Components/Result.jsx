@@ -8,7 +8,7 @@ function Result() {
     const [loading, setLoading] = useState(true);
     const fetchResults = async () => {
         try {
-            const response = await axios.get('http://localhost:3000/voteRoutes/electionResults');
+            const response = await axios.get('http://localhost:5000/voteRoutes/electionResults');
             setResults(response.data);
         } catch (error) {
             console.error('Error fetching election results:', error);
@@ -24,7 +24,7 @@ function Result() {
                 if (!token) {
                     window.location.href = '/signin';
                 } else {
-                    const response = await axios.get('http://localhost:3000/auth/middleware', {}, {
+                    const response = await axios.get('http://localhost:5000/auth/middleware', {}, {
                         headers: {
                             cookie: token,
                             withCredentials: true

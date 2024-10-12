@@ -17,7 +17,7 @@ function CreateElection() {
     useEffect(() => {
         const fetchCandidateData = async () => {
             try {
-                const response = await axios.post('http://localhost:3000/candidateRoutes/getCandidates');
+                const response = await axios.post('http://localhost:5000/candidateRoutes/getCandidates');
                 setCandidatesExist(response.data.length > 0);
             } catch (error) {
                 console.error('Error fetching candidate data:', error);
@@ -29,7 +29,7 @@ function CreateElection() {
                 if (!token) {
                     window.location.href = '/signin';
                 } else {
-                    const response = await axios.get('http://localhost:3000/auth/middleware', {}, {
+                    const response = await axios.get('http://localhost:5000/auth/middleware', {}, {
                         headers: {
                             cookie: token,
                             withCredentials: true
@@ -75,7 +75,7 @@ function CreateElection() {
                 return;
             }
 
-            const response = await axios.post("http://localhost:3000/ElectionRoutes/createElection", {
+            const response = await axios.post("http://localhost:5000/ElectionRoutes/createElection", {
                 electionId,
                 electionName,
                 startDate: selectedStartDate.toISOString().split('T')[0], // Format as YYYY-MM-DD

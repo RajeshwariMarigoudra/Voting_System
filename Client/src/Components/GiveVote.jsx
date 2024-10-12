@@ -18,7 +18,7 @@ function GiveVote() {
     useEffect(() => {
         const fetchElections = async () => {
             try {
-                const response = await axios.get('http://localhost:3000/electionRoutes/getElections');
+                const response = await axios.get('http://localhost:5000/electionRoutes/getElections');
                 setElections(response.data);
             } catch (error) {
                 console.error('Error fetching elections:', error);
@@ -30,7 +30,7 @@ function GiveVote() {
                 if (!token) {
                     window.location.href = '/signin';
                 } else {
-                    const response = await axios.get('http://localhost:3000/auth/middleware', {}, {
+                    const response = await axios.get('http://localhost:5000/auth/middleware', {}, {
                         headers: {
                             cookie: token,
                             withCredentials: true
@@ -55,7 +55,7 @@ function GiveVote() {
         const selectedElectionId = e.target.value;
         setSelectedElection(selectedElectionId);
         try {
-            const response = await axios.post('http://localhost:3000/candidateRoutes/getCandidates', { electionId: selectedElectionId });
+            const response = await axios.post('http://localhost:5000/candidateRoutes/getCandidates', { electionId: selectedElectionId });
             setCandidatesByElection(response.data);
         } catch (error) {
             console.error('Error fetching candidates:', error);
@@ -78,7 +78,7 @@ function GiveVote() {
                 return;
             }
 
-            await axios.post('http://localhost:3000/voteRoutes/submitVote', {
+            await axios.post('http://localhost:5000/voteRoutes/submitVote', {
                 Voter_ID: "voter@gmail.com",
                 Voter_Name: "voter1",
                 Candidate_Name: selectedCandidate,

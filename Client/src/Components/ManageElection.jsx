@@ -12,7 +12,7 @@ function ManageElection() {
             if (!token) {
               window.location.href = '/signin';
             } else {
-              const response = await axios.get('http://localhost:3000/auth/middleware', {}, {
+              const response = await axios.get('http://localhost:5000/auth/middleware', {}, {
                 headers: {
                   cookie: token,
                   withCredentials: true

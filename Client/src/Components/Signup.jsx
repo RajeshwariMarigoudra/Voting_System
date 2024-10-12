@@ -23,7 +23,7 @@ function Signup() {
         return;
       }
   
-      const endpoint = "http://localhost:3000/voterAuth/signup"; // Update with your signup endpoint
+      const endpoint = "http://localhost:5000/voterAuth/signup"; // Update with your signup endpoint
   
       const result = await axios.post(endpoint, {
         Voter_ID,

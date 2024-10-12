@@ -27,9 +27,9 @@ function Signin() {
 
       let endpoint;
       if (role === 'admin') {
-        endpoint = "http://localhost:3000/auth/signin";
+        endpoint = "http://localhost:5000/auth/signin";
       } else {
-        endpoint = "http://localhost:3000/voterAuth/signin";
+        endpoint = "http://localhost:5000/voterAuth/signin";
       }
 
       const result = await axios.post(endpoint, {
