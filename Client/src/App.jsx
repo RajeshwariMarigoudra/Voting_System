@@ -1,5 +1,5 @@
 import React from 'react';
-import { Outlet, createBrowserRouter } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './Components/Home';
 import ManageCandidate from './Components/ManageCandidate';
 import ManageElection from './Components/ManageElection';
@@ -16,95 +16,32 @@ import VoterHome from './Components/VoterHome';
 import Result from './Components/Result';
 import Signup from './Components/Signup';
 
-
 const App = () => {
-
   return (
     <div>
-      <Outlet />
+      <Routes>
+        <Route path="/" element={<Signup />} />
+        <Route path="/signin" element={<Signin />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/result" element={<Result />} />
+        <Route path="/givevote" element={<GiveVote />} />
+        <Route path="/voterhome" element={<VoterHome />} />
+        <Route path="/voterNavbar" element={<VoterNavbar />} />
+        <Route path="/addCandidate" element={<AddCandidate />} />
+        <Route path="/manageVoter" element={<ManageCandidate />}>
+          <Route path="addVoter" element={<AddVoterForm />} />
+          <Route path="AllVoters" element={<Voters />} />
+        </Route>
+        <Route path="/manageElection" element={<ManageElection />}>
+          <Route path="createElection" element={<CreateElection />} />
+          <Route path="updateElection" element={<UpdateElection />} />
+          <Route path="deleteElection" element={<DeleteElection />} />
+          <Route path="updateElection/:id" element={<UpdateElection />} />
+        </Route>
+        <Route path="/signout" element={<Signin />} />
+      </Routes>
     </div>
   );
-}
-
-export const appRouter = createBrowserRouter([
-  {
-    path: "/",
-    element: <App />,
-    children: [
-      {
-        path: "/home",
-        element: <Home />
-      },
-      {
-        path:"/result",
-        element:<Result/>
-      },
-      {
-        path: "/",
-        element: <Signup />
-      },
-      {
-        path: "/signin",
-        element: <Signin />
-      },
-      {
-        path: "/givevote",
-        element: <GiveVote />
-      },
-      {
-        path: "/manageVoter",
-        element: <ManageCandidate />,
-        children: [
-          {
-            path: "/manageVoter/addVoter",
-            element: <AddVoterForm />
-          },
-          {
-            path: "/manageVoter/AllVoters",
-            element: <Voters />
-          }
-        ]
-      },
-      {
-        path: "/manageElection",
-        element: <ManageElection />,
-        children: [
-          {
-            path: "createElection",
-            element: <CreateElection />,
-          },
-          {
-            path: "updateElection",
-            element: <UpdateElection />
-          },
-          {
-            path: "/manageElection/updateElection/:id",
-            element: <UpdateElection />
-          },
-          {
-            path: "/manageElection/deleteElection",
-            element: <DeleteElection />
-          },
-        ]
-      },
-      {
-        path: "/signout",
-        element: <Signin />
-      },
-      {
-        path:"/voterhome",
-        element:<VoterHome/>
-      },
-      {
-        path:"voterNavbar",
-        element:<VoterNavbar/>
-      },
-      {
-        path:"/addCandidate",
-        element:<AddCandidate/>
-      }
-    ]
-  },
-]);
+};
 
 export default App;

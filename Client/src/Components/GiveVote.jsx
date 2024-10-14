@@ -1,6 +1,4 @@
-// Import useState and useEffect
 import React, { useState, useEffect } from 'react';
-import Navbar from './Navbar';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -14,6 +12,7 @@ function GiveVote() {
     const [elections, setElections] = useState([]);
     const [candidatesByElection, setCandidatesByElection] = useState([]);
     const [voterData, setVoterData] = useState([]);
+    const [canVote, setCanVote] = useState(false);
 
     useEffect(() => {
         const fetchElections = async () => {
@@ -24,30 +23,25 @@ function GiveVote() {
                 console.error('Error fetching elections:', error);
             }
         };
+
         const verifyToken = async () => {
-            try {
-                const token = cookie.load('token');
-                if (!token) {
-                    window.location.href = '/signin';
-                } else {
-                    const response = await axios.get('http://localhost:5000/auth/middleware', {}, {
-                        headers: {
-                            cookie: token,
-                            withCredentials: true
-                        }
-                    }).then(res => {
-                        console.log('Token verified:', res);
-                        fetchElections();
-                    }).catch(err => {
-                        console.error('Error verifying token:', err);
-                        cookie.remove('token');
-                        window.location.href = '/signin';
+            const token = cookie.load('token');
+            if (!token) {
+                window.location.href = '/signin';
+            } else {
+                try {
+                    await axios.get('http://localhost:5000/auth/middleware', {
+                        headers: { cookie: token, withCredentials: true }
                     });
+                    fetchElections();
+                } catch (error) {
+                    console.error('Error verifying token:', error);
+                    cookie.remove('token');
+                    window.location.href = '/signin';
                 }
-            } catch (error) {
-                console.error('Error verifying token:', error);
             }
         };
+
         verifyToken();
     }, []);
 
@@ -57,10 +51,31 @@ function GiveVote() {
         try {
             const response = await axios.post('http://localhost:5000/candidateRoutes/getCandidates', { electionId: selectedElectionId });
             setCandidatesByElection(response.data);
+            const selectedElectionData = elections.find(election => election.electionId === selectedElectionId);
+            if (selectedElectionData) {
+                checkVotingEligibility(selectedElectionData);
+            }
         } catch (error) {
             console.error('Error fetching candidates:', error);
         }
     };
+
+    const checkVotingEligibility = (election) => {
+        const now = new Date();
+    
+        // Create start and end DateTime in local time
+        const startDateTime = new Date(`${election.startDate.split("T")[0]}T${election.startTime}:00`);
+        const endDateTime = new Date(`${election.endDate.split("T")[0]}T${election.endTime}:00`);
+    
+        // Convert to UTC to compare correctly
+        const utcNow = new Date(now.toUTCString());
+    
+        // Check if current UTC time is within the election timeframe
+        const eligibility = utcNow >= startDateTime && utcNow <= endDateTime;
+    
+        setCanVote(eligibility);
+    };
+    
 
     const handleCandidate = (e) => {
         const selectedValue = e.target.value;
@@ -70,14 +85,13 @@ function GiveVote() {
     };
 
     const handleVote = async () => {
-        try {
-            // Check if the user has already voted in the selected election
-            const hasVoted = voterData.some(voter => voter.Election_ID === selectedElection);
-            if (hasVoted) {
-                toast.error("You have already voted in this election.");
-                return;
-            }
+        const hasVoted = voterData.some(voter => voter.Election_ID === selectedElection);
+        if (hasVoted) {
+            toast.error("You have already voted in this election.");
+            return;
+        }
 
+        try {
             await axios.post('http://localhost:5000/voteRoutes/submitVote', {
                 Voter_ID: "voter@gmail.com",
                 Voter_Name: "voter1",
@@ -89,7 +103,6 @@ function GiveVote() {
 
             // Update voterData state to reflect the new vote
             setVoterData([...voterData, { Election_ID: selectedElection }]);
-
             // Clear selections
             setSelectedElection("");
             setSelectedCandidate("");
@@ -141,9 +154,9 @@ function GiveVote() {
                         </div>
                     )}
                     <button
-                        className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600"
+                        className={`py-2 px-4 rounded-md ${canVote ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
                         onClick={handleVote}
-                        disabled={!selectedElection || !selectedCandidate}
+                        disabled={!canVote}
                     >
                         Submit Vote
                     </button>
