@@ -1,15 +1,28 @@
-import {Voter} from "../models/Voter.js";
+import { Voter } from "../models/Voter.js";
 import express from "express";
-
+import { VoterSignin } from "../models/VoterSignin.js";
 
 const router = express.Router();
 
+// Express route for adding a voter
 router.post('/addVoter', async (req, res) => {
+    const validKeys = ['Voter_ID', 'voterName', 'password', 'age', 'gender', 'wardNumber', 'pincode', 'district', 'state'];
+    const requestKeys = Object.keys(req.body);
+
+    // Check for extra keys
+    const extraKeys = requestKeys.filter(key => !validKeys.includes(key));
+    if (extraKeys.length > 0) {
+        return res.status(400).json({ 
+            error: `Extra values detected: ${extraKeys.join(', ')}. Only the following keys are allowed: ${validKeys.join(', ')}.` 
+        });
+    }
+
     try {
-        const { id, voterName, age, gender, wardNumber, pincode, district, state } = req.body;
+        const { Voter_ID, voterName, password, age, gender, wardNumber, pincode, district, state } = req.body;
         const newVoter = new Voter({
-            id,
+            id: Voter_ID,  // Pass Voter_ID to the id field
             voterName,
+            password,
             age,
             gender,
             wardNumber,
@@ -17,12 +30,21 @@ router.post('/addVoter', async (req, res) => {
             district,
             state
         });
+
+        // Create a new voter without hashing the password
+        const newVoterSign = new VoterSignin({
+            Voter_ID, // Use Voter_ID for VoterSignin
+            password,  // Save the password directly
+        });
+
+        // Save the new voter and voter signin
         await newVoter.save();
-        return res.json({ added: true })
+        await newVoterSign.save();
+        return res.json({ added: true });
     } catch (err) {
-        return res.json({ error: err.message })
+        return res.status(500).json({ error: err.message });
     }
-})
+});
 
 router.get('/getVoter', async (req, res) => {
     try {
@@ -33,4 +55,4 @@ router.get('/getVoter', async (req, res) => {
     }
 });
 
-export { router as VoterInsertRouter }
+export { router as VoterInsertRouter };

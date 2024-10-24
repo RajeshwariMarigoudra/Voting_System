@@ -8,6 +8,7 @@ import cookie from 'react-cookies';
 const AddVoterForm = () => {
     const [id, setId] = useState('');
     const [voterName, setVoterName] = useState('');
+    const [password, setPassword] = useState('');
     const [age, setAge] = useState('');
     const [gender, setGender] = useState('');
     const [wardNumber, setWardNumber] = useState('');
@@ -21,6 +22,7 @@ const AddVoterForm = () => {
             const response = await axios.post("http://localhost:5000/voterInsertRoutes/addVoter", {
                 id,
                 voterName,
+                password,
                 age,
                 gender,
                 wardNumber,
@@ -36,6 +38,7 @@ const AddVoterForm = () => {
             // Reset form fields
             setId('');
             setVoterName('');
+            setPassword('');
             setAge('');
             setGender('');
             setWardNumber('');
@@ -88,6 +91,11 @@ const AddVoterForm = () => {
                         <label htmlFor="">Voter Name</label>
                         <input value={voterName} onChange={(e) => setVoterName(e.target.value)} className='block px-2 py-2 bg-gray-200 outline-none rounded-md w-full' type="text" placeholder='Name' required />
                     </div>
+                    <div className='mt-3'>
+                        <label htmlFor="">Password</label>
+                        <input value={password} onChange={(e) => setPassword(e.target.value)} className='block px-2 py-2 bg-gray-200 outline-none rounded-md w-full' type="text" placeholder='Password' required />
+                    </div>
+                    
                     <div className='mt-3'>
                         <label htmlFor="">Age</label>
                         <input value={age} onChange={(e) => setAge(e.target.value)} className='block px-2 py-2 bg-gray-200 outline-none rounded-md w-full' type="Number" placeholder='Age' required />
