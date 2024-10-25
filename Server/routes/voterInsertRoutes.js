@@ -5,8 +5,9 @@ import { VoterSignin } from "../models/VoterSignin.js";
 const router = express.Router();
 
 // Express route for adding a voter
+// Express route for adding a voter
 router.post('/addVoter', async (req, res) => {
-    const validKeys = ['Voter_ID', 'voterName', 'password', 'age', 'gender', 'wardNumber', 'pincode', 'district', 'state'];
+    const validKeys = ['id', 'voterName', 'password', 'age', 'gender', 'wardNumber', 'pincode', 'district', 'state']; 
     const requestKeys = Object.keys(req.body);
 
     // Check for extra keys
@@ -18,11 +19,13 @@ router.post('/addVoter', async (req, res) => {
     }
 
     try {
-        const { Voter_ID, voterName, password, age, gender, wardNumber, pincode, district, state } = req.body;
+        const { id, voterName, password, age, gender, wardNumber, pincode, district, state } = req.body; 
+
+        // Create a new voter
         const newVoter = new Voter({
-            id: Voter_ID,  // Pass Voter_ID to the id field
+            id, 
             voterName,
-            password,
+            password, // Save the password directly without hashing
             age,
             gender,
             wardNumber,
@@ -31,20 +34,22 @@ router.post('/addVoter', async (req, res) => {
             state
         });
 
-        // Create a new voter without hashing the password
+        // Create a new voter signin
         const newVoterSign = new VoterSignin({
-            Voter_ID, // Use Voter_ID for VoterSignin
+            Voter_ID: id, // Use Voter_ID for VoterSignin 
             password,  // Save the password directly
         });
 
         // Save the new voter and voter signin
         await newVoter.save();
         await newVoterSign.save();
-        return res.json({ added: true });
+        return res.json({ added: true, voterId: id }); // Returning the voter ID
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
 });
+
+
 
 router.get('/getVoter', async (req, res) => {
     try {
