@@ -1,14 +1,11 @@
-// VoterHome.js
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useLocation } from "react-router-dom";
 import VoterNavbar from "./VoterNavbar";
 import "tailwindcss/tailwind.css"; // Import Tailwind CSS
 import cookie from 'react-cookies';
 
 const VoterHome = () => {
-  const location = useLocation();
-  const voterID = location.state?.voterID || "";
+  const [voterID, setVoterID] = useState(localStorage.getItem("voterID") || "");
   const [voterDetails, setVoterDetails] = useState(null);
 
   useEffect(() => {
@@ -22,36 +19,35 @@ const VoterHome = () => {
         console.error("Error fetching voter details:", error);
       }
     };
+
     const verifyToken = async () => {
       try {
         const token = cookie.load('token');
         if (!token) {
           window.location.href = '/signin';
         } else {
-          const response = await axios.get('http://localhost:5000/auth/middleware', {}, {
+          await axios.get('http://localhost:5000/auth/middleware', {}, {
             headers: {
               cookie: token,
               withCredentials: true
             }
-          }).then(res => {
-            console.log('Token verified:', res);
-            fetchVoterDetails();
-          }).catch(err => {
-            console.error('Error verifying token:', err);
-            cookie.remove('token');
-            window.location.href = '/signin';
           });
+          fetchVoterDetails();
         }
       } catch (error) {
         console.error('Error verifying token:', error);
+        cookie.remove('token');
+        window.location.href = '/signin';
       }
     };
+
     verifyToken();
 
     if (voterID) {
       fetchVoterDetails();
     }
   }, [voterID]);
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-200">
       <VoterNavbar />

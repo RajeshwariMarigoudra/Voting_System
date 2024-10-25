@@ -40,14 +40,15 @@ function Signin() {
       if (result.data.message === "Login Success") {
         toast.success("Login Success");
         setTimeout(() => {
+          cookie.save("token", result.data.jwttoken);
+          // Store Voter_ID in localStorage
+          localStorage.setItem("voterID", Voter_ID);
           if (role === "admin") {
-            cookie.save("token", result.data.jwttoken);
             navigateTo("/home");
             setVoter(result.data.voter);
           } else {
             // Assuming "voter" role
-            cookie.save("token", result.data.jwttoken);
-            navigateTo("/voterhome", { state: { voterID: Voter_ID } });
+            navigateTo("/voterhome");
           }
         }, 1000);
       } else if (
@@ -67,9 +68,7 @@ function Signin() {
       <div className="w-full flex justify-center items-center bg-gray-100 py-5 min-h-[100vh] h-auto ">
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="voterID" className="p-2">
-              Voter ID
-            </label>
+            <label htmlFor="voterID" className="p-2">Voter ID</label>
             <input
               type="text"
               className="form-control p-2"
@@ -81,9 +80,7 @@ function Signin() {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="exampleInputPassword1" className="p-2">
-              Password
-            </label>
+            <label htmlFor="exampleInputPassword1" className="p-2">Password</label>
             <input
               type="password"
               className="form-control p-2"
@@ -95,9 +92,7 @@ function Signin() {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="role" className="p-2">
-              Role
-            </label>
+            <label htmlFor="role" className="p-2">Role</label>
             <select
               id="role"
               className="form-control p-2"
