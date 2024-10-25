@@ -13,6 +13,8 @@ function GiveVote() {
     const [candidatesByElection, setCandidatesByElection] = useState([]);
     const [voterData, setVoterData] = useState([]);
     const [canVote, setCanVote] = useState(false);
+    const [voterID, setVoterID] = useState(localStorage.getItem("voterID") || "");
+    const [voterName, setVoterName] = useState("");
 
     useEffect(() => {
         const fetchElections = async () => {
@@ -21,6 +23,17 @@ function GiveVote() {
                 setElections(response.data);
             } catch (error) {
                 console.error('Error fetching elections:', error);
+            }
+        };
+
+        const fetchVoterDetails = async () => {
+            try {
+                const response = await axios.get(`http://localhost:5000/voterRoutes/${voterID}`);
+                if (response.data) {
+                    setVoterName(response.data.voterName);
+                }
+            } catch (error) {
+                console.error('Error fetching voter details:', error);
             }
         };
 
@@ -34,6 +47,7 @@ function GiveVote() {
                         headers: { cookie: token, withCredentials: true }
                     });
                     fetchElections();
+                    fetchVoterDetails();
                 } catch (error) {
                     console.error('Error verifying token:', error);
                     cookie.remove('token');
@@ -43,7 +57,7 @@ function GiveVote() {
         };
 
         verifyToken();
-    }, []);
+    }, [voterID]);
 
     const handleElectionChange = async (e) => {
         const selectedElectionId = e.target.value;
@@ -62,20 +76,12 @@ function GiveVote() {
 
     const checkVotingEligibility = (election) => {
         const now = new Date();
-    
-        // Create start and end DateTime in local time
         const startDateTime = new Date(`${election.startDate.split("T")[0]}T${election.startTime}:00`);
         const endDateTime = new Date(`${election.endDate.split("T")[0]}T${election.endTime}:00`);
-    
-        // Convert to UTC to compare correctly
         const utcNow = new Date(now.toUTCString());
-    
-        // Check if current UTC time is within the election timeframe
         const eligibility = utcNow >= startDateTime && utcNow <= endDateTime;
-    
         setCanVote(eligibility);
     };
-    
 
     const handleCandidate = (e) => {
         const selectedValue = e.target.value;
@@ -93,17 +99,15 @@ function GiveVote() {
 
         try {
             await axios.post('http://localhost:5000/voteRoutes/submitVote', {
-                Voter_ID: "voter@gmail.com",
-                Voter_Name: "voter1",
+                Voter_ID: voterID,
+                Voter_Name: voterName,
                 Candidate_Name: selectedCandidate,
                 Candidate_Party: candidateParty,
                 Election_ID: selectedElection
             });
             toast.success("Thank you! Your vote has been submitted");
 
-            // Update voterData state to reflect the new vote
             setVoterData([...voterData, { Election_ID: selectedElection }]);
-            // Clear selections
             setSelectedElection("");
             setSelectedCandidate("");
             setCandidateParty("");

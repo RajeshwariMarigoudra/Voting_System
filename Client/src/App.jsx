@@ -14,13 +14,15 @@ import AddCandidate from './Components/AddCandidate';
 import VoterNavbar from './Components/VoterNavbar';
 import VoterHome from './Components/VoterHome';
 import Result from './Components/Result';
-import Signup from './Components/Signup';
+import VoterDashboard from './Components/VoterDashboard';
+// import Signup from './Components/Signup';
 
 const App = () => {
   return (
     <div>
       <Routes>
-        <Route path="/" element={<Signup />} />
+        {/* <Route path="/" element={<Signup />} /> */}
+        <Route path="/" element={<VoterDashboard />} />
         <Route path="/signin" element={<Signin />} />
         <Route path="/home" element={<Home />} />
         <Route path="/result" element={<Result />} />
